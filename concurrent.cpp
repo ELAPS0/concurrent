@@ -22,9 +22,9 @@ class keccak_worker
     Keccak keccak224;
 public:
     keccak_worker(): keccak224(Keccak::Keccak224){};
-    void proc (const char* dt, size_t sz)
+    void proc (array <char,CHUNK_SIZE > dt)
     {
-        keccak224(dt, sz);
+        keccak224(dt.data(), dt.size());
     }
 };
 

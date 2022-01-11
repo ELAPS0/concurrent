@@ -42,7 +42,6 @@ public:
     //    return the_queue.empty();
     //}
    
-    //NYI переместить w, а не скопировать 
     void wait_and_get()
     {
         Worker w;    
@@ -50,7 +49,7 @@ public:
         {
             std::unique_lock <std::mutex> lck(mtx);
             cv.wait(lck);
-           //NYI w.proc(q.front());
+            w.proc(q.front());
             q.pop();
         }
     }
