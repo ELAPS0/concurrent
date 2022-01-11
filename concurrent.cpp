@@ -25,14 +25,15 @@ public:
     void proc (array <char,CHUNK_SIZE > dt)
     {
         keccak224(dt.data(), dt.size());
+        cntr.fetch_add(CHUNK_SIZE,std::memory_order_relaxed);         
     }
 };
 
 void usage()
 {
-    cout << "cnccrnt mode produser_threads_number [consumer_threas_number]\n";
-    cout << "\tmode - sync|async";
-    cout << "for async mode concumer threads number is mandatory"; 
+    cout << "cnccrnt mode produser_threads_number [consumer_threas_number]" << endl;;
+    cout << "\tmode - sync|async" << endl;
+    cout << "\tfor async mode concumer threads number is mandatory" << endl;; 
     exit(0);
 }
 
@@ -60,7 +61,6 @@ void async_produce()
     {
         rnd.read(dt.data(), CHUNK_SIZE);
         q.push(dt);
-        cntr.fetch_add(CHUNK_SIZE,std::memory_order_relaxed);         
     }
     rnd.close();
 };
