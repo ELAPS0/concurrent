@@ -29,7 +29,7 @@ public:
     {
         {
             std::lock_guard <std::mutex> lck (mtx);
-            q.push(data);
+            q.push(std::move(data));
         }
         cv.notify_one();
     }
