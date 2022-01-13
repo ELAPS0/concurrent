@@ -7,7 +7,7 @@
 #include <vector> 
 #include <array> 
 #include <atomic> 
-#include "concurrent_queue.h"
+#include "concurrentqueue.h"
 #include "keccak.h"
 
 using namespace std;
@@ -51,7 +51,7 @@ void sync_produce()
     rnd.close();
 };
 
-concurrent_queue < array <char, CHUNK_SIZE>, keccak_worker> q(&up_and_running);
+moodycamel::ConcurrentQueue < array <char, CHUNK_SIZE>> q;
 
 void async_produce()
 {
@@ -60,15 +60,11 @@ void async_produce()
     while(up_and_running.load(std::memory_order_relaxed))
     {
         rnd.read(dt.data(), CHUNK_SIZE);
-        q.push(dt);
+        q.enqueue(std::move(dt));
     }
     rnd.close();
 };
 
-void consume()
-{
-    q.wait_and_get();
-}
 
 int main(int argc, char** argv)
 {
@@ -100,7 +96,19 @@ int main(int argc, char** argv)
     {
 
         for (int i = 0; i != cons_num; ++i)
-            cons.emplace_back(consume);
+            cons.emplace_back([&]() {
+                array <char, CHUNK_SIZE>  dt;
+                Keccak keccak224(Keccak::Keccak224);
+                while(up_and_running.load(std::memory_order_relaxed))
+                {
+                   if( q.try_dequeue(dt))
+                    {
+                        keccak224( &dt[0], CHUNK_SIZE);
+                        cntr.fetch_add(CHUNK_SIZE,std::memory_order_relaxed);         
+                    }
+                }          
+            }
+        );
     }
 
     this_thread::sleep_for(3s);

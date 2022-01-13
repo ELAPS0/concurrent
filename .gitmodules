@@ -1,3 +1,6 @@
 [submodule "hash-library"]
 	path = hash-library
 	url = https://github.com/stbrumme/hash-library.git
+[submodule "concurrentqueue"]
+	path = concurrentqueue
+	url = https://github.com/cameron314/concurrentqueue.git
