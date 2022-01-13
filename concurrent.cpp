@@ -104,7 +104,8 @@ int main(int argc, char** argv)
                    if( q.try_dequeue(dt))
                     {
                         keccak224( &dt[0], CHUNK_SIZE);
-                        cntr.fetch_add(CHUNK_SIZE,std::memory_order_relaxed);         
+                        cntr.fetch_add(CHUNK_SIZE,std::memory_order_relaxed);
+                        this_thread::sleep_for(100ms);
                     }
                 }          
             }
